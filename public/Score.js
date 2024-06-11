@@ -11,19 +11,6 @@ class Score {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
     this.scaleRatio = scaleRatio;
-    this.stageJson = stageJson;
-  }
-
-  update(deltaTime) {
-    // 현재 스테이지 찾기
-    const currentStage = this.stageJson.data.find((stage) => stage.id === this.nowStage);
-    // 점수 업데이트
-    this.score += deltaTime * 0.001 * currentStage.scorePerSecond;
-    // 다음 스테이지 찾기
-    const nextStage = this.stageJson.data.find((stage) => stage.id === this.nowStage + 1);
-    if (nextStage && Math.floor(this.score) >= nextStage.score) {
-      this.changeStage(nextStage);
-    }
   }
 
   // 스테이지 변경 함수
@@ -36,6 +23,18 @@ class Score {
       });
       this.nowStage = nextStage.id;
       console.log(`현재 스테이지 ${this.nowStage}`); // 확인용 콘솔로그
+    }
+  }
+
+  update(deltaTime) {
+    // 현재 스테이지 찾기
+    const currentStage = stageJson.data.find((stage) => stage.id === this.nowStage);
+    // 점수 업데이트
+    this.score += deltaTime * 0.001 * currentStage.scorePerSecond;
+    // 다음 스테이지 찾기
+    const nextStage = stageJson.data.find((stage) => stage.id === this.nowStage + 1);
+    if (nextStage && Math.floor(this.score) >= nextStage.score) {
+      this.changeStage(nextStage);
     }
   }
 
