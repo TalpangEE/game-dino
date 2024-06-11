@@ -34,7 +34,7 @@ class Score {
     // 다음 스테이지 찾기
     const nextStage = stageJson.data.find((stage) => stage.id === this.nowStage + 1);
     if (nextStage && Math.floor(this.score) >= nextStage.score) {
-      this.changeStage(nextStage);
+      this.changeStage(nextStage++);
     }
   }
 
