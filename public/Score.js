@@ -4,7 +4,7 @@ import stageJson from './assets/stage.json' with { type: 'json' };
 class Score {
   score = 0;
   HIGH_SCORE_KEY = 'highScore';
-  stageChange = [];
+  stageChange = true;
   nowStage = 1000;
 
   constructor(ctx, scaleRatio) {
@@ -15,8 +15,8 @@ class Score {
 
   // 스테이지 변경 함수
   changeStage(nextStage) {
-    if (Math.floor(this.score) >= this.stageChange) {
-      this.stageChange = false;
+    if (Math.floor(this.score) >= nextStage.score && this.stageChange) {
+      this.stageChange = false; // 스테이지 변경 후 stageChange를 false로 설정
       sendEvent(11, {
         currentStage: this.nowStage,
         targetStage: nextStage.id,
@@ -28,13 +28,18 @@ class Score {
 
   update(deltaTime) {
     // 현재 스테이지 찾기
-    const currentStage = stageJson.data.find((stage) => stage.id === this.nowStage);
-    // 점수 업데이트
-    this.score += deltaTime * 0.001 * currentStage.scorePerSecond;
-    // 다음 스테이지 찾기
-    const nextStage = stageJson.data.find((stage) => stage.id === this.nowStage + 1);
-    if (nextStage && Math.floor(this.score) >= nextStage.score) {
-      this.changeStage(nextStage++);
+    let currentStage = stageJson.data.find((stage) => stage.id === this.nowStage);
+    if (currentStage) {
+      // 점수 업데이트
+      this.score += deltaTime * 0.001 * currentStage.scorePerSecond;
+      console.log(`현재 점수: ${Math.floor(this.score)}`); // 확인용 콘솔로그
+
+      // 다음 스테이지 찾기
+      const nextStage = stageJson.data.find((stage) => stage.id === this.nowStage + 1);
+      if (nextStage && Math.floor(this.score) >= nextStage.score) {
+        this.stageChange = true; // 다음 스테이지로 변경하기 위해 stageChange를 true로 설정
+        this.changeStage(nextStage);
+      }
     }
   }
 
