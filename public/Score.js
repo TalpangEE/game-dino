@@ -1,5 +1,7 @@
 import { sendEvent } from './Socket.js';
 import stageJson from './assets/stage.json' with { type: 'json' };
+import itemJson from './assets/stage.json' with { type: 'json' };
+import itemUnlockJson from './assets/stage.json' with { type: 'json' };
 
 class Score {
   score = 0;
@@ -43,13 +45,34 @@ class Score {
     }
   }
 
+  // 아이템 획득시 점수 변화 함수
   getItem(itemId) {
-    // 아이템 획득시 점수 변화
-    this.score += 0;
+    const item = itemJson.data.find((item) => item.id === itemId);
+
+    if (item) {
+      this.score += item.score;
+      sendEvent(15, id, score);
+
+      // 아이템 획득 후 다음 스테이지로 이동할 수 있는 점수가 충족되면 다음스테이지로 넘김
+      const nextStage = stageJson.data.find((stage) => stage.id === this.nowStage + 1);
+
+      if (nextStage && this.score >= nextStage.score) {
+        this.stageChange = true;
+        this.changeStage(nextStage);
+
+        sendEvent(11, {
+          currentStage: this.nowStage,
+          targetStage: nextStage.id,
+        });
+      }
+    } else {
+      console.log(`아이템 ${itemId}을(를) 찾을 수 없음`);
+    }
   }
 
   reset() {
     this.score = 0;
+    this.stage = 1000;
   }
 
   setHighScore() {
