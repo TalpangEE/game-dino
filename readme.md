@@ -7,3 +7,5 @@
 1. 클라이언트 코드 확인
 2. 웹소켓 연동 
 3. 게임 플레이# game-dino
+
+#https://www.notion.so/b624d0f90c7a410687a9f4273bad5674?v=64928febec5040c2b480b24d0006802e
