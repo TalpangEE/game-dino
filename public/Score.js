@@ -1,5 +1,7 @@
 import { sendEvent } from './Socket.js';
 import stageJson from './assets/stage.json' with { type: 'json' };
+import itemJson from './assets/item.json' with { type: 'json' };
+import itemUnlockJson from './assets/item_unlock.json' with { type: 'json' };
 
 class Score {
   score = 0;
@@ -7,10 +9,11 @@ class Score {
   stageChange = true;
   nowStage = 1000;
 
-  constructor(ctx, scaleRatio) {
+  constructor(ctx, scaleRatio, itemJson) {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
     this.scaleRatio = scaleRatio;
+    this.itemJson = itemJson;
   }
 
   // 스테이지 변경 함수
@@ -43,13 +46,40 @@ class Score {
     }
   }
 
+  // 아이템 획득시 점수 변화 함수
   getItem(itemId) {
-    // 아이템 획득시 점수 변화
-    this.score += 0;
+    const itemData = itemJson.data.find((item) => item.id === itemId);
+    if (itemData) {
+      const itemScore = itemData.score;
+
+      // 점수 업데이트
+      this.score += itemScore;
+      sendEvent(15, {
+        itemId: itemData.id,
+        score: this.score,
+      });
+      console.log(
+        `아이템 획득: ${itemId}, 점수 획득: ${itemScore}, 현재 점수: ${Math.floor(this.score)}`,
+      ); // 콘솔로그 추가
+
+      // 아이템 획득 후 다음 스테이지로 이동할 수 있는 점수가 충족되면 다음스테이지로 넘김
+      const nextStage = stageJson.data.find((stage) => stage.id === this.nowStage + 1);
+
+      if (nextStage && Math.floor(this.score) >= nextStage.score) {
+        this.stageChange = true;
+        this.changeStage(nextStage);
+
+        sendEvent(11, {
+          currentStage: this.nowStage,
+          targetStage: nextStage.id,
+        });
+      }
+    }
   }
 
   reset() {
     this.score = 0;
+    this.stage = 1000;
   }
 
   setHighScore() {
