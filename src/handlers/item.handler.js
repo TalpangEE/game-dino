@@ -12,7 +12,7 @@ export const itemGetHandler = (userId, payload) => {
   const currentStage = userStage[userStage.length - 1].id;
 
   // 아이템 존재 여부 확인 및 점수 가져오기
-  const item = items.data.find((i) => i.id === id);
+  const item = items.data.find((item) => item.id === id);
   if (!item) {
     return { status: 'fail', message: '아이템이 존재하지 않음' };
   }
